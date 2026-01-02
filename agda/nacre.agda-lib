@@ -1,0 +1,3 @@
+name: nacre
+include: .
+depend: agda2hs
