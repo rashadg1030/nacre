@@ -60,7 +60,20 @@ library
 
     -- Modules exported by the library.
     exposed-modules:  Nacre
-
+                    , NacreTest
+                    , Nacre.Function
+                    , Nacre.Group
+                    , Nacre.Request
+                    , Nacre.Request.Body
+                    , Nacre.Request.Headers
+                    , Nacre.Request.Method
+                    , Nacre.Request.Path
+                    , Nacre.Request.Query
+                    , Nacre.Response
+                    , Nacre.Response.Body
+                    , Nacre.Response.Headers
+                    , Nacre.Response.Status
+                    , Nacre.Responses
     -- Modules included in this library but not exported.
     -- other-modules:
 
@@ -68,7 +81,7 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.20.0.0
+    build-depends:    base ^>=4.20.0.0, bytestring, http-types, text, wai
 
     -- Directories containing source files.
     hs-source-dirs:   src
