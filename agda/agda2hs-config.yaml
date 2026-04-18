@@ -1,0 +1,4 @@
+rewrites:
+  - from: Nacre.Request.Path.Text
+    to: Text
+    importing: Data.Text

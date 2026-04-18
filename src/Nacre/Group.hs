@@ -1,15 +1,33 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE ExplicitNamespaces #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RequiredTypeArguments #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Nacre.Group where
+module Nacre.Group (
+    Group (..),
+    (>>),
+    Zip (..),
+    GZip (..),
+    zipRecords,
+    Map (..),
+    (<:>),
+    (<$$>),
+    apply,
+)
+where
 
+import Data.Proxy (Proxy (..))
 import GHC.Generics
 import Nacre.Function
 import Nacre.Request (Request)
-import Prelude hiding ((>>))
+import Prelude hiding (map, (>>))
 
 (>>) :: a -> b -> Group a b
 (>>) = (:<>)
@@ -45,3 +63,26 @@ zipRecords ::
     h ->
     s
 zipRecords c h = to (gzip (from c) (from h))
+
+(<:>)
+    :: (Generic c, Generic h, Generic s, GZip (Rep c) (Rep h) (Rep s))
+    => c
+    -> h
+    -> s
+(<:>) = zipRecords
+
+class Map f a where
+    type With f a
+    map :: Proxy f -> a -> With f a
+
+instance (Map f a, Map f b) => Map f (Group a b) where
+    type With f (Group a b) = Group (With f a) (With f b)
+    map p (a :<> b) = map p a :<> map p b
+
+apply :: forall f a. (Map f a) => a -> With f a
+apply = map (Proxy @f)
+
+infixl 4 <$$>
+
+(<$$>) :: forall f -> forall a. (Map f a) => a -> With f a
+(<$$>) f = map (Proxy @f)

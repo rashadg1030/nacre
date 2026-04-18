@@ -8,17 +8,15 @@ import Nacre.Request qualified as Request
 import Nacre.Responses qualified as Responses
 import Network.Wai qualified as Wai
 
-data Function (i :: Type) (o :: Type)
-
-type (-->) = Function
+type i --> o = (i, o)
 
 data family Contract r
 
-data family Server (ctx :: Type -> Type) r
+data family Function (ctx :: Type -> Type) r
 
-data family Client r
+data family Endpoint (ctx :: Type -> Type) r
 
-data family Handler (ctx :: Type -> Type) r
+data family Consumer r
 
 data instance Contract (Request m p q b h --> o) where
     (:->) ::
@@ -26,11 +24,11 @@ data instance Contract (Request m p q b h --> o) where
         Responses.Contract o ->
         Contract (Request m p q b h --> o)
 
-(@->) ::
+(.->) ::
     (Request.Contract m p q b h -> Request.Contract m' p' q' b' h') ->
     (Responses.Contract o -> Responses.Contract o') ->
     (Contract (Request m p q b h --> o) -> Contract (Request m' p' q' b' h' --> o'))
-(@->) = undefined
+(.->) reqF respF (reqC :-> respC) = reqF reqC :-> respF respC
 
 data instance Server ctx (Request m p q b h --> o) where
     (:=) ::
@@ -38,11 +36,11 @@ data instance Server ctx (Request m p q b h --> o) where
         ((Request.Data m p q b h, Wai.Request) -> ctx o) ->
         Server ctx (Request m p q b h --> o)
 
-(@=) ::
+(.=) ::
     (Contract (Request m p q b h --> o) -> Contract (Request m' p' q' b' h' --> o')) ->
     (((Request.Data m p q b h, Wai.Request) -> ctx o) -> ((Request.Data m' p' q' b' h', Wai.Request) -> ctx o')) ->
     (Server ctx (Request m p q b h --> o) -> Server ctx (Request m' p' q' b' h' --> o'))
-(@=) = undefined
+(.=) contractF handlerF (contract := hdlr) = contractF contract := handlerF hdlr
 
 data instance Client (Request m p q b h --> o) where
     Client ::
@@ -51,7 +49,7 @@ data instance Client (Request m p q b h --> o) where
 
 data instance Handler ctx (Request m p q b h --> o) = Handler ((Request.Data m p q b h, Wai.Request) -> ctx o)
 
-handler :: ((Request.Data m p q b h, Wai.Request) -> ctx o) -> Handler ctx (Request m p q b h --> o)
-handler = Handler
+fn :: ((Request.Data m p q b h, Wai.Request) -> ctx o) -> Handler ctx (Request m p q b h --> o)
+fn = Handler
 
 data ClientError = ClientError

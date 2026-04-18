@@ -17,8 +17,8 @@ data Request m p q b h = Request
     { method_ :: m
     , path_ :: p
     , query_ :: q
-    , requestBody_ :: b
-    , requestHeaders_ :: h
+    , body_ :: b
+    , headers_ :: h
     }
 
 type Data m p q b h = Request m p q (IO b) h
@@ -38,22 +38,22 @@ query :: Query.Contract q q -> Contract m p HTTP.Query b h -> Contract m p q b h
 query c = onQuery (const c)
 
 requestBody :: Body.Contract b b -> Contract m p q BS.ByteString h -> Contract m p q b h
-requestBody c = onRequestBody (const c)
+requestBody c = onBody (const c)
 
 requestHeaders :: Headers.Contract h h -> Contract m p q b HTTP.RequestHeaders -> Contract m p q b h
-requestHeaders c = onRequestHeaders (const c)
+requestHeaders c = onHeaders (const c)
 
 onMethod :: (m -> m') -> Request m p q b h -> Request m' p q b h
-onMethod f req = req { method_ = f (method_ req) }
+onMethod f req = req{method_ = f (method_ req)}
 
 onPath :: (p -> p') -> Request m p q b h -> Request m p' q b h
-onPath f req = req { path_ = f (path_ req) }
+onPath f req = req{path_ = f (path_ req)}
 
 onQuery :: (q -> q') -> Request m p q b h -> Request m p q' b h
-onQuery f req = req { query_ = f (query_ req) }
+onQuery f req = req{query_ = f (query_ req)}
 
-onRequestBody :: (b -> b') -> Request m p q b h -> Request m p q b' h
-onRequestBody f req = req { requestBody_ = f (requestBody_ req) }
+onBody :: (b -> b') -> Request m p q b h -> Request m p q b' h
+onBody f req = req{body_ = f (body_ req)}
 
-onRequestHeaders :: (h -> h') -> Request m p q b h -> Request m p q b h'
-onRequestHeaders f req = req { requestHeaders_ = f (requestHeaders_ req) }
+onHeaders :: (h -> h') -> Request m p q b h -> Request m p q b h'
+onHeaders f req = req{headers_ = f (headers_ req)}

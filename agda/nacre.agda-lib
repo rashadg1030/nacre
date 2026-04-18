@@ -1,3 +1,4 @@
 name: nacre
 include: .
-depend: agda2hs
+depend: agda2hs-base
+flags: --erasure
