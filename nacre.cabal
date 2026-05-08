@@ -15,32 +15,7 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Nacre
-                    , NacreTest
-                    , Example
-                    , Nacre.Function
-                    , Nacre.Group
-                    , Nacre.Request
-                    , Nacre.Request.Body
-                    , Nacre.Request.Headers
-                    , Nacre.Request.Method
-                    , Nacre.Request.Path
-                    , Nacre.Request.Query
-                    , Nacre.Response
-                    , Nacre.Response.Body
-                    , Nacre.Response.Headers
-                    , Nacre.Response.Status
-                    , Nacre.Responses
-    build-depends:    base ^>=4.20.0.0, bytestring, http-types, text, wai
+    exposed-modules:  Nacre, Nacre.Contract
+    build-depends:    base ^>=4.20.0.0, bytestring, http-types, http-api-data, text, wai, profunctors
     hs-source-dirs:   src
     default-language: GHC2024
-
-test-suite nacre-test
-    import:           warnings
-    default-language: GHC2024
-    type:             exitcode-stdio-1.0
-    hs-source-dirs:   test
-    main-is:          Main.hs
-    build-depends:
-        base ^>=4.20.0.0,
-        nacre
